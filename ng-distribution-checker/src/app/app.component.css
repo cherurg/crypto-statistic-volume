@@ -7,3 +7,9 @@ app-volume-stat {
   margin-bottom: 5px;
   flex-basis: 60%;
 }
+
+@media only screen and (max-device-width: 736px) {
+  app-volume-stat {
+    flex-basis: 100%;
+  }
+}
