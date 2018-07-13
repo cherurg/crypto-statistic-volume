@@ -1,3 +1,7 @@
 <div *ngFor="let project of allProjects; index as i" class="container example-headers-align">
-  <app-volume-stat [project]="project" [ksData]="ksData[i]" [averages]="averages[i]"></app-volume-stat>
+  <app-volume-stat
+    [project]="project"
+    [ksData]="ksData[i]"
+    [averages]="averages[i]"
+    [volumeSeries]="historyPrices[i]"></app-volume-stat>
 </div>

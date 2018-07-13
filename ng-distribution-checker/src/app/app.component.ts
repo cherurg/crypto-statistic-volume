@@ -29,13 +29,6 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // this.ksService
-    //   .postSamples(
-    //     [[1, 2, 1, 1, 1, 0], [0, 0, 0, 0, 0]],
-    //     [[110, 110, 80, 70, 100, 1001.2], [1, 1, 1, 1, 1]],
-    //   )
-    //   .subscribe(data => (this.ksData = data))
-
     this.santiment
       .queryAllProjects()
       .pipe(
@@ -59,15 +52,7 @@ export class AppComponent implements OnInit {
 
           return forkJoin(historyPrices)
         }),
-        tap(historyPrices => {
-          // for (let [index, hp] of toPairs(historyPrices)) {
-          //   this.historyPrices.push({
-          //     data: hp,
-          //   })
-          // }
-
-          this.historyPrices = historyPrices
-        }),
+        tap(historyPrices => (this.historyPrices = historyPrices)),
         switchMap(() => {
           let xx = []
           let yy = []
@@ -80,10 +65,11 @@ export class AppComponent implements OnInit {
             xx.push(leftSubarray)
             yy.push(rightSubarray)
 
-            this.averages.push([
-              this.getAverage(leftSubarray),
-              this.getAverage(rightSubarray),
-            ])
+            this.averages.push({
+              left: this.getAverage(leftSubarray),
+              right: this.getAverage(rightSubarray),
+              halfLen,
+            })
           }
 
           return this.ksService.postSamples(xx, yy)

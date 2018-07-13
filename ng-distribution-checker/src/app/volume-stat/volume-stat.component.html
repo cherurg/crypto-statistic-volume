@@ -8,7 +8,7 @@
         <span>KS: <span [style.color]="ksData[1] < 0.1 ? 'red' : 'black'">{{ksData[1] | number:'1.4-4'}} </span></span>
       </span>
       <span *ngIf="averages">
-        <span> ratio: {{(averages[0] / averages[1]) | number:'1.4-4'}}</span>
+        <span> Volume change: {{(averages.right / averages.left - 1) * 100 | number:'1.2-2'}}%</span>
       </span>
     </mat-panel-description>
   </mat-expansion-panel-header>
