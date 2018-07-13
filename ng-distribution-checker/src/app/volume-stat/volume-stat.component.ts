@@ -25,7 +25,18 @@ export class VolumeStatComponent implements OnInit {
         it.volume,
       ])
 
-      console.log(volumeData)
+      let startDate = volumeData[0][0]
+      let midDate = volumeData[Math.floor(volumeData.length / 2)][0]
+      let endDate = volumeData[volumeData.length - 1][0]
+
+      let avLeftChart = [
+        [startDate, this.averages.left],
+        [midDate, this.averages.left],
+      ]
+      let avRightChart = [
+        [midDate, this.averages.right],
+        [endDate, this.averages.right],
+      ]
 
       this.chart = new StockChart({
         rangeSelector: {
@@ -61,6 +72,15 @@ export class VolumeStatComponent implements OnInit {
           {
             data: volumeData,
             name: 'Volume',
+          },
+
+          {
+            data: avLeftChart,
+            name: 'Average Volume',
+          },
+          {
+            data: avRightChart,
+            name: 'Average Volume',
           },
         ],
       })

@@ -57,6 +57,7 @@ export class AppComponent implements OnInit {
           let xx = []
           let yy = []
 
+          let averages = []
           for (let hp of this.historyPrices) {
             let halfLen = Math.floor(hp.length / 2)
             let reducedToVolume = hp.map(it => it.volume)
@@ -65,12 +66,14 @@ export class AppComponent implements OnInit {
             xx.push(leftSubarray)
             yy.push(rightSubarray)
 
-            this.averages.push({
+            averages.push({
               left: this.getAverage(leftSubarray),
               right: this.getAverage(rightSubarray),
               halfLen,
             })
           }
+
+          this.averages = averages
 
           return this.ksService.postSamples(xx, yy)
         }),
