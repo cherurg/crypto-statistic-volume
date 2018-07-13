@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core'
-import { KolmogorovApiClientService } from './api-clients/kolmogorov-api-client.service'
-import { SantimentApiClientService } from './api-clients/santiment-api-client.service'
 import { switchMap, tap } from 'rxjs/operators'
 import { forkJoin } from '../../node_modules/rxjs'
-import { clone } from 'lodash'
+import { KolmogorovApiClientService } from './api-clients/kolmogorov-api-client.service'
+import { SantimentApiClientService } from './api-clients/santiment-api-client.service'
 
 @Component({
   selector: 'app-root',
@@ -11,11 +10,11 @@ import { clone } from 'lodash'
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
-  title = 'app'
-
   public ksData
 
   public allProjects = []
+
+  public topProjectsNumber = 30
 
   constructor(
     private ksService: KolmogorovApiClientService,
@@ -30,33 +29,33 @@ export class AppComponent implements OnInit {
     //   )
     //   .subscribe(data => (this.ksData = data))
 
-    let monthAgo = new Date(Date.now() - 86400 * 1000 * 30).toISOString()
-    let now = new Date().toISOString()
-
     this.santiment
       .queryAllProjects()
       .pipe(
         tap(data => {
-          let allProjects = (data as any).data.allProjects.map(it => clone(it))
+          let allProjects = (data as any).data.allProjects
           allProjects.sort((x, y) => (+x.volumeUsd < +y.volumeUsd ? 1 : -1))
 
-          this.allProjects = allProjects.slice(0, 30)
+          this.allProjects = allProjects.slice(0, this.topProjectsNumber)
         }),
         switchMap(() => {
-          let observables = []
+          let monthAgo = new Date(Date.now() - 86400 * 1000 * 30).toISOString()
+          let now = new Date().toISOString()
+
+          let historyPrices = []
           for (let project of this.allProjects) {
-            let $ = this.santiment.queryHistoryPrice(
+            let historyPrice$ = this.santiment.queryHistoryPrice(
               project.slug,
               monthAgo,
               now,
             )
 
-            observables.push($)
+            historyPrices.push(historyPrice$)
           }
 
-          return forkJoin(observables)
+          return forkJoin(historyPrices)
         }),
       )
-      .subscribe(data => console.log(data))
+      .subscribe(historyPrices => console.log(historyPrices))
   }
 }
