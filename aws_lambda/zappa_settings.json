@@ -1,0 +1,11 @@
+{
+  "dev": {
+    "app_function": "app.app",
+    "lambda_handler": "app.lambda_handler",
+    "aws_region": "us-east-1",
+    "profile_name": "default",
+    "project_name": "crypto-distribu",
+    "runtime": "python2.7",
+    "s3_bucket": "zappa-sozkxjr5b"
+  }
+}
