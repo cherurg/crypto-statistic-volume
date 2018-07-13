@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core'
-import { cloneDeep, toPairs } from 'lodash'
+import { cloneDeep } from 'lodash'
 import { forkJoin } from 'rxjs'
-import { switchMap, tap, map } from 'rxjs/operators'
+import { switchMap, tap } from 'rxjs/operators'
 import { KolmogorovApiClientService } from './api-clients/kolmogorov-api-client.service'
 import { SantimentApiClientService } from './api-clients/santiment-api-client.service'
 

@@ -5,9 +5,11 @@ import { MatCardModule } from '@angular/material/card'
 import { MatExpansionModule } from '@angular/material/expansion'
 import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+import { ChartModule, HIGHCHARTS_MODULES } from 'angular-highcharts'
 import { Apollo, ApolloModule } from 'apollo-angular'
 import { HttpLink, HttpLinkModule } from 'apollo-angular-link-http'
 import { InMemoryCache } from 'apollo-cache-inmemory'
+import * as highstock from 'highcharts/modules/stock.src'
 import { AppComponent } from './app.component'
 
 @NgModule({
@@ -21,8 +23,14 @@ import { AppComponent } from './app.component'
     MatCardModule,
     MatExpansionModule,
     BrowserAnimationsModule,
+    ChartModule,
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HIGHCHARTS_MODULES,
+      useFactory: () => [highstock],
+    },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {
