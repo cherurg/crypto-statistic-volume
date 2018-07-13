@@ -10,10 +10,11 @@ import { Apollo, ApolloModule } from 'apollo-angular'
 import { HttpLink, HttpLinkModule } from 'apollo-angular-link-http'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import * as highstock from 'highcharts/modules/stock.src'
-import { AppComponent } from './app.component'
+import { AppComponent } from './app.component';
+import { VolumeStatComponent } from './volume-stat/volume-stat.component'
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, VolumeStatComponent],
   imports: [
     BrowserModule,
     HttpClientModule,

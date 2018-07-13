@@ -1,0 +1,17 @@
+<mat-expansion-panel class="card">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      {{project.slug | uppercase}}
+    </mat-panel-title>
+    <mat-panel-description>
+      <span *ngIf="ksData">
+        <span>KS: <span [style.color]="ksData[1] < 0.1 ? 'red' : 'black'">{{ksData[1] | number:'1.4-4'}} </span></span>
+      </span>
+      <span *ngIf="averages">
+        <span> ratio: {{(averages[0] / averages[1]) | number:'1.4-4'}}</span>
+      </span>
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+
+  Hello
+</mat-expansion-panel>
