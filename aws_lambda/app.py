@@ -9,14 +9,20 @@ app = Flask(__name__)
 def response(code, body, type='application/json'):
     return {
         'statusCode': code,
-        'headers': {'Content-Type': type},
+        'headers': {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT',
+            'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token',
+            'Content-Type': type
+        },
         'body': body
     }
 
 
 @app.route('/', methods=['GET', 'POST'])
 def lambda_handler(event=None, context=None):
-    if event['httpMethod'] == 'GET':
+    method = event['httpMethod']
+    if method == 'GET' or method == 'OPTIONS':
         return response(200, 'It works', 'text/plain')
 
     data = json.loads(base64.b64decode(event['body']))
