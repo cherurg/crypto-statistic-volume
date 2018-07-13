@@ -1,4 +1,4 @@
-<mat-expansion-panel class="card">
+<mat-expansion-panel class="card" (opened)="opened()">
   <mat-expansion-panel-header>
     <mat-panel-title>
       {{project.slug | uppercase}}
@@ -13,5 +13,5 @@
     </mat-panel-description>
   </mat-expansion-panel-header>
 
-  Hello
+  <div [chart]="chart"></div>
 </mat-expansion-panel>
