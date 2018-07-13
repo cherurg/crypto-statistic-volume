@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core'
-import { switchMap, tap } from 'rxjs/operators'
-import { forkJoin } from '../../node_modules/rxjs'
+import { cloneDeep, toPairs } from 'lodash'
+import { forkJoin } from 'rxjs'
+import { switchMap, tap, map } from 'rxjs/operators'
 import { KolmogorovApiClientService } from './api-clients/kolmogorov-api-client.service'
 import { SantimentApiClientService } from './api-clients/santiment-api-client.service'
 
@@ -10,11 +11,17 @@ import { SantimentApiClientService } from './api-clients/santiment-api-client.se
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
-  public ksData
+  public ksData: any[] = []
+  public averages = []
 
   public allProjects = []
 
+  public historyPrices = []
+
   public topProjectsNumber = 30
+
+  public dateStart = new Date(Date.now() - 86400 * 1000 * 30).toISOString()
+  public dateEnd = new Date().toISOString()
 
   constructor(
     private ksService: KolmogorovApiClientService,
@@ -33,21 +40,18 @@ export class AppComponent implements OnInit {
       .queryAllProjects()
       .pipe(
         tap(data => {
-          let allProjects = (data as any).data.allProjects
+          let allProjects = cloneDeep(data as any)
           allProjects.sort((x, y) => (+x.volumeUsd < +y.volumeUsd ? 1 : -1))
 
           this.allProjects = allProjects.slice(0, this.topProjectsNumber)
         }),
         switchMap(() => {
-          let monthAgo = new Date(Date.now() - 86400 * 1000 * 30).toISOString()
-          let now = new Date().toISOString()
-
           let historyPrices = []
           for (let project of this.allProjects) {
             let historyPrice$ = this.santiment.queryHistoryPrice(
               project.slug,
-              monthAgo,
-              now,
+              this.dateStart,
+              this.dateEnd,
             )
 
             historyPrices.push(historyPrice$)
@@ -55,7 +59,40 @@ export class AppComponent implements OnInit {
 
           return forkJoin(historyPrices)
         }),
+        tap(historyPrices => {
+          // for (let [index, hp] of toPairs(historyPrices)) {
+          //   this.historyPrices.push({
+          //     data: hp,
+          //   })
+          // }
+
+          this.historyPrices = historyPrices
+        }),
+        switchMap(() => {
+          let xx = []
+          let yy = []
+
+          for (let hp of this.historyPrices) {
+            let halfLen = Math.floor(hp.length / 2)
+            let reducedToVolume = hp.map(it => it.volume)
+            let leftSubarray = reducedToVolume.slice(0, halfLen)
+            let rightSubarray = reducedToVolume.slice(halfLen)
+            xx.push(leftSubarray)
+            yy.push(rightSubarray)
+
+            this.averages.push([
+              this.getAverage(leftSubarray),
+              this.getAverage(rightSubarray),
+            ])
+          }
+
+          return this.ksService.postSamples(xx, yy)
+        }),
       )
-      .subscribe(historyPrices => console.log(historyPrices))
+      .subscribe(ks => (this.ksData = ks as any))
+  }
+
+  private getAverage(array) {
+    return array.reduce((sum, it) => sum + it, 0) / array.length
   }
 }

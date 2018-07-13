@@ -3,6 +3,7 @@ import { Apollo } from 'apollo-angular'
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { ApolloQueryResult } from 'apollo-client'
+import { map } from '../../../node_modules/rxjs/operators'
 
 export interface ActiveAdressesPiece {
   activeAddresses: number
@@ -83,17 +84,19 @@ export class SantimentApiClientService {
   }
 
   queryAllProjects(): Observable<ApolloQueryResult<any>> {
-    return this.apollo.query<any>({
-      query: gql`
-        query {
-          allProjects {
-            slug
-            ticker
-            volumeUsd
+    return this.apollo
+      .query<any>({
+        query: gql`
+          query {
+            allProjects {
+              slug
+              ticker
+              volumeUsd
+            }
           }
-        }
-      `,
-    })
+        `,
+      })
+      .pipe(map(data => data.data.allProjects))
   }
 
   queryHistoryPrice(
@@ -102,27 +105,33 @@ export class SantimentApiClientService {
     to: string,
     interval: string = '1d',
   ): Observable<ApolloQueryResult<any>> {
-    return this.apollo.query({
-      query: gql`
-        query HistoryPrice(
-          $slug: String!
-          $interval: String!
-          $from: String!
-          $to: String!
-        ) {
-          historyPrice(slug: $slug, from: $from, to: $to, interval: $interval) {
-            volume
-            datetime
-            ticker
+    return this.apollo
+      .query({
+        query: gql`
+          query HistoryPrice(
+            $slug: String!
+            $interval: String!
+            $from: String!
+            $to: String!
+          ) {
+            historyPrice(
+              slug: $slug
+              from: $from
+              to: $to
+              interval: $interval
+            ) {
+              volume
+              datetime
+            }
           }
-        }
-      `,
-      variables: {
-        slug,
-        interval,
-        from,
-        to,
-      },
-    })
+        `,
+        variables: {
+          slug,
+          interval,
+          from,
+          to,
+        },
+      })
+      .pipe(map(it => (it.data as any).historyPrice))
   }
 }
